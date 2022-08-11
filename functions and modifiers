@@ -10,4 +10,8 @@ contract SimpleAuction {
     uint public highestBid;
     address public highestBidder; 
     bool public hasEnded;
+
+    function initialize(address _beneficiary) external {
+        beneficiary = _beneficiary;
+    }
 }
