@@ -11,7 +11,7 @@ contract SimpleAuction {
     address public highestBidder; 
     bool public hasEnded;
 
-    function initialize(address _beneficiary) external {
+    constructor (address _beneficiary) {
         beneficiary = _beneficiary;
     }
 }
