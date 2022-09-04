@@ -1,0 +1,17 @@
+//SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.9;
+
+contract SimpleAuction {
+    //Auction parameters
+    address public beneficiary;
+
+    // State of the Auction
+    uint public highestBid;
+    address public highestBidder; 
+    bool public hasEnded;
+
+    constructor (address _beneficiary) {
+        beneficiary = _beneficiary;
+    }
+}
