@@ -66,31 +66,41 @@ function undateBid(address _bidder, uint _bidAmount) internal returns (bool succ
             return true; 
 }
 
-function reveal(uint _bidAmount, bool _inLegit, string calldata _secret)
+function reveal(uint[] calldata _bidAmount, bool[] calldata _areLegit, string [] calldata _secret)
 external
 onlyAfter(biddingEnd)
 onlyBefore(revealEnd)
 {
-    uint refund;
-    Bid storage bidToCheck = bids[msg.sender] [0]; // Load the first bid of the transaction sender
-    bytes32 hashedInput = generateSealeBid(_bidAmount, _isLegit, _secret); 
-    if (bidToCheck.sealedBid == hashedInput) {
-        //Bid is successfull revealed
-        refund = bidto.deposit;
-        if (_isLegit && bidToCheck.deposit >= _bidAmount) {
-            // Bid is valid
-            bool success = updateBid(msg.sender, _bidAmount); 
+    uint nBids = bids[msg.sender].length;
+    require(_bidAmount.length == nBids, 'invalid number of bid amounts');
+    require(_areLegit.length == nBids, 'invalid number of bid legitimacy indicators');
+    require(_secrets.length == nBids, 'invalid number of bid secrets');
+
+    uint totalRefund;
+
+    for (uint i = 0; i < nBids; i++) {
+        Bid storage bidToCheck = bids[msg.sender] [i];
+        (uint bidAmount, bool isLegit, string memory secret) = (_bidAmounts[i], _areLegit[i], _secrets[i]);
+        bytes32 hashedInput = generateSealeBid(bidAmount, isLegit, secret);
+        if (bidToCheck.sealedBid != hashedInput) {
+            // Failed to reveal bid.
+            // Do not refund deposit and continue with next bid.
+            continue;
+        }
+        totalRefund += bidtoCheck.deposit;
+        if (isLegit && bidToCheck.deposti >= bidAmoun) {
+            bool success = updateBid(msd.sender, bidAmount);
             if (success) {
-                // Bid is new highest bid
-                refund -= _bidAmount
-        }    
-    }
+                totalRefund -= bidAmount;
+            }
+        }
+   
     // Prevent re-claiming of the same deposit.
     bidToCheck.sealedBid = bytes32(0);
     }
 
-    if (refund > 0)
-        payable(msg.sender).jtransfer(refund);
+    if (totalRefund > 0)
+        payable(msg.sender).jtransfer(totalRefund);
     }
 }
 
