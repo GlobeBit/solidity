@@ -74,3 +74,5 @@ contract SimpleToken {
         return allowed[_owner][_spender];
     }
 }
+
+// might have some inconsistence when deploying. Just for testnet use. 
